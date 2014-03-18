@@ -1,0 +1,26 @@
+<!doctype html>
+<html ng-app="phonecatApp">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.2/angular.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono:700' rel='stylesheet' type='text/css'/>
+    
+    <script src="/app.js"></script>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+  <body ng-controller="StatesController">
+
+    <div id="header">
+      <h1>Control Station</h1>
+    </div>
+
+    
+    <div id="main">
+      <div class="button-container">
+        <button class="button" ng-repeat="state in states" ng-click="stateClicked(state)">
+          <span>{{state.name}}</span>
+        </button>
+      </div>
+    </div>
+    
+  </body>
+</html>

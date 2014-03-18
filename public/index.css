@@ -1,0 +1,62 @@
+* {
+  font-family: 'Ubuntu Mono', sans-serif;
+}
+
+a:link, a:visited {
+  text-decoration:none;
+  color: black;
+}
+
+body {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  color: white;
+  margin: 0;
+}
+
+#header {
+  overflow: auto;
+  position: absolute;
+  width: 100%;
+  height: 130pt;
+  text-align: center;
+  background-color: black;
+}
+
+h1 {
+  font-size: 50pt;
+}
+
+#main {
+  overflow: auto;
+  position: absolute;
+  width: 100%;
+  top: 130pt;
+  bottom: 0;
+  background: #333333;
+}
+
+.button-container {
+  width: 100%;
+  overflow-y: auto;
+}
+
+.button {
+  width: 20vw;
+  height: 20vw;
+  float: left;
+  background: lightgray;   
+  margin: 2vw;
+  display: table;
+}
+.button:hover {
+  background: white;
+}
+
+span {
+  font-size: xx-large;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
