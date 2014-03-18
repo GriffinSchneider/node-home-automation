@@ -72,10 +72,11 @@ lightStateSchema.methods.sendRequest = function (lightId, callback) {
     for (var propertyName in this) {
         var propertyValue = this[propertyName];
         var mappedPropertyName = mapping[propertyName];
-        if (propertyValue && mappedPropertyName) {
+        if (mapping.hasOwnProperty(propertyName) && propertyValue && mappedPropertyName && propertyValue.length !== 0) {
             requestDict[mappedPropertyName] = propertyValue;
         }
     }
+    console.log(requestDict);
         
     makeHueAPIRequest('lights/'+ lightId + '/state', requestDict, function (body) {
         console.log(body);
@@ -101,13 +102,15 @@ lightCommandSchema.methods.send = function () {
     
     // Making many requests at once seems to overwhelm the bridge,
     // so make the requests sequentially.
-    var i = 0;
     var that = this;
+    var i = 0;
     var setLight = function () {
         var state = that.states[i];
         if (state) {
-            state.sendRequest(i+1, setLight);
-            i++;
+            setTimeout(function () {
+                state.sendRequest(i+1, setLight);
+                i++;
+            }, 150);
         }
     };
     setLight();
@@ -119,23 +122,25 @@ var testing = true;
 if (testing) {
     LightCommand.collection.drop();
     LightState.collection.drop();
+    for (i = 0; i < 100; i++) {
     
     var blueState = new LightState();
     blueState.name = "Blue";
     blueState.isOn = true;
     blueState.effect = 'none';
-    blueState.bri = 255;
-    blueState.sat = 255;
-    blueState.hue = 43991;
-    blueState.transitionTime = 50;
+    blueState.brightness = 255;
+    blueState.saturation = 255;
+    blueState.hue = 600 * i;
+    blueState.transitionTime = 5;
     blueState.save();
     
-    var  = new LightCommand();
+    var testCommand = new LightCommand();
     testCommand.name = "Test Light Command";
     
     
-    testCommand.states = [testState, testState, testState, testState, testState, testState, testState, testState, testState, testState];
+    testCommand.states = [blueState, blueState, blueState, blueState, blueState, blueState, blueState, blueState, blueState, blueState];
     testCommand.save();
+    }
 }
 
 /////////////////////////////////////////////////////
