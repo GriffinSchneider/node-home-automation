@@ -46,22 +46,21 @@ if (testing) {
     LightCommand.collection.drop();
     LightState.collection.drop();
     for (i = 0; i < 100; i++) {
-        var blueState = new LightState();
-        blueState.name = "Blue";
-        blueState.isOn = true;
-        blueState.effect = 'none';
-        blueState.brightness = 255;
-        blueState.saturation = 255;
-        blueState.hue = 600 * i;
-        blueState.transitionTime = 5;
-        blueState.save();
+        var state = new LightState();
+        state.name = "Blue";
+        state.isOn = true;
+        state.effect = 'none';
+        state.brightness = 255;
+        state.saturation = 255;
+        state.hue = 600 * i;
+        state.transitionTime = 5;
+        state.save();
         
         var testCommand = new LightCommand();
         testCommand.name = "Test Light Command";
         
         
-        // testCommand.states = Array.apply(null, Array(10)).map(function(){return blueState;});
-        testCommand.states = [blueState, blueState, blueState, blueState, blueState, blueState, blueState, blueState, blueState, blueState];
+        testCommand.states = Array.apply(null, Array(10)).map(function(){return state;});
         testCommand.save();
     }
 }

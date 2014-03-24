@@ -1,4 +1,3 @@
-
 var path = require('path');
 var express = require('express');
 
@@ -21,6 +20,7 @@ app.post('/api/applyState', function(request, response){
     models.LightCommand.findById(body._id, function(err, command) {
         api.sendLightCommand(command);
     });
+    response.send();
 });
 
 var server = app.listen (3000, function () {
