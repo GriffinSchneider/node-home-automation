@@ -5,19 +5,31 @@ var models = require('./models.js');
 var api = require('./hue-api.js');
 
 var app = express();
-
 app.use(express.bodyParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/api/commands', function (request, response) {
+var consolidate = require('consolidate');
+app.engine('html', consolidate.handlebars);
+app.set('view engine', 'html');
+app.set('views', __dirname + '/views');
+
+app.get('/', function(request, response) {
     models.LightCommand.find(function(err, found) {
-        response.send(found.map(function(command){return{_id:command._id, name:command.name};}));
+        var states = found.map(function(command) {
+            return {
+                _id :command._id,
+                name: command.name
+            };
+        });
+        response.render('index', {
+            lightStates: states
+        });
     });
 });
 
-app.post('/api/applyState', function(request, response){
+app.get('/api/applyState/:stateId', function(request, response){
     var body = request.body;
-    models.LightCommand.findById(body._id, function(err, command) {
+    models.LightCommand.findById(request.param('stateId'), function(err, command) {
         api.sendLightCommand(command);
     });
     response.send();

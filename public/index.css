@@ -2,11 +2,6 @@
   font-family: 'Ubuntu Mono', sans-serif;
 }
 
-a:link, a:visited {
-  text-decoration:none;
-  color: black;
-}
-
 body {
   width: 100%;
 }
@@ -15,7 +10,7 @@ body {
   width: 100%;
 }
 
-.button {
+.lightButton {
   width: 20vw;
   height: 20vw;
   float: left;
