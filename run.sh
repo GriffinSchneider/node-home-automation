@@ -1,7 +1,7 @@
 
 if [ $# -eq 0 ]
 then
-   node server.js
+    node-supervisor -e 'html|js|css' server.js
 else
-    node-debug server.js
+    node-supervisor -e 'html|js|css' --exec node --debug server.js
 fi
