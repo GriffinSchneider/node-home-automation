@@ -62,7 +62,7 @@ exports.sendLightCommand = function (command) {
     // Making many requests at once seems to overwhelm the bridge,
     // so make the requests sequentially.
     var i = 0;
-    var setLight = function () {
+    (function setLight () {
         var state = command.states[i];
         if (state) {
             setTimeout(function () {
@@ -70,6 +70,5 @@ exports.sendLightCommand = function (command) {
                 i++;
             }, 50);
         }
-    };
-    setLight();
+    })();
 };
