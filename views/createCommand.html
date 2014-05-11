@@ -1,0 +1,51 @@
+
+<script>
+ $('#createCommand').addClass('active');
+</script>
+
+<style>
+ form {
+   padding-left: 40px;
+   padding-right: 40px;
+ }
+</style>
+
+<form class="form-horizontal" action="/api/createCommand" method="post">
+<fieldset>
+  
+  <div class="form-group">
+    <label class="col-md-4 control-label" for="name">Name</label>  
+    <div class="col-md-4">
+      <input name="name" type="text" placeholder="name" class="form-control input-md" required="">
+    </div>
+  </div>
+
+  {{#lights}}
+  <div class="form-group">
+    <label class="col-md-4 control-label" for="{{@index}}">{{name}}</label>
+    <div class="col-md-4">
+      <select id="selectbasic" name="{{@index}}" class="form-control">
+        <option value="none">No Action</option>
+        {{#../lightStates}}
+        <option value="{{_id}}">{{name}}</option>
+        {{/../lightStates}}
+      </select>
+    </div>
+  </div>
+  {{/lights}}
+  
+  <div class="form-group">
+    <label class="col-md-4 control-label" for="button1id"></label>
+    <div class="col-md-8">
+      <button id="saveButton" type="submit" class="btn btn-success">Save</button>
+      <button id="cancelButton" class="btn btn-primary">Cancel</button>
+      <button id="deleteButton" class="btn btn-danger">Delete</button>
+    </div>
+  </div>
+
+</fieldset>
+</form>
+
+<script>
+</script>
+

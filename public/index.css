@@ -17,3 +17,7 @@ body {
   margin: 2vw;
   display: table;
 }
+
+#mainContainer {
+  padding-top: 60px;
+}

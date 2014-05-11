@@ -1,0 +1,15 @@
+<div class="button-container">
+  {{#lightCommands}}
+  <a href="/api/sendCommand/{{_id}}" class="lightButton button btn btn-lg btn-primary">
+    <span>{{name}}</span>
+  </a>
+  {{/lightCommands}}
+</div>
+
+<script>
+ $('#sendCommand').addClass('active');
+ $('.lightButton').click(function() {
+   $.get($(this).attr('href'));
+   return false;
+ });
+</script>

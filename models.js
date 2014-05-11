@@ -4,6 +4,7 @@ mongoose.connect('mongodb://localhost/home_automation');
 var Schema = mongoose.Scheme;
 
 var db = mongoose.connection;
+
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function callback () {
   // yay!
@@ -31,7 +32,10 @@ exports.LightState = LightState;
 /////////////////////
 var lightCommandSchema = mongoose.Schema({
     name: String,
-    states: [lightStateSchema]
+    statesWithLights: [{
+        lightNumber: Number,
+        lightStateId: mongoose.Schema.Types.ObjectId
+    }]
 });
 
 var LightCommand = mongoose.model('LightCommand', lightCommandSchema);

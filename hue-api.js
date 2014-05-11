@@ -1,18 +1,19 @@
 var http = require('http');
+var models = require('./models.js');
 
-var makeHueAPIRequest = function (path, data, callbackWithBody) {
+function makeHueAPIRequest(path, data, callbackWithBody) {
     var request = http.request({
         hostname: '192.168.1.125',
         port: '80',
         path: '/api/1234567890/' + path,
-        method: 'PUT'
+        method: data ? 'PUT' : 'GET'
     }, function (response) {
         var body = '';
         response.on('data', function (chunk) {
             body += chunk;
         });
         response.on('end', function () {
-            callbackWithBody(body);
+            callbackWithBody(JSON.parse(body));
         });
     });
 
@@ -25,7 +26,7 @@ var makeHueAPIRequest = function (path, data, callbackWithBody) {
     request.end();
 };
 
-var sendLightStateRequest = function (lightState, lightId, callback) {
+function sendLightStateRequest(stateAndLight, callback) {
     var mapping = {
         isOn: "on",
         effect: "effect",
@@ -38,24 +39,25 @@ var sendLightStateRequest = function (lightState, lightId, callback) {
 
     var requestDict = {};
 
-    for (var propertyName in lightState) {
-        var propertyValue = lightState[propertyName];
-        var mappedPropertyName = mapping[propertyName];
-        if (mapping.hasOwnProperty(propertyName) && propertyValue && mappedPropertyName && propertyValue.length !== 0) {
-            requestDict[mappedPropertyName] = propertyValue;
+    models.LightState.findOne({_id:stateAndLight.lightStateId}, function(err, lightState) {
+        for (var propertyName in lightState) {
+            var propertyValue = lightState[propertyName];
+            var mappedPropertyName = mapping[propertyName];
+            if (mapping.hasOwnProperty(propertyName) && propertyValue && mappedPropertyName && propertyValue.length !== 0) {
+                requestDict[mappedPropertyName] = propertyValue;
+            }
         }
-    }
 
-    makeHueAPIRequest('lights/' + lightId + '/state', requestDict, function (body) {
-        console.log(body);
-        callback();
+        makeHueAPIRequest('lights/' + stateAndLight.lightNumber + '/state', requestDict, function (body) {
+            console.log(body);
+            callback();
+        });
     });
 };
 
 exports.sendLightCommand = function (command) {
-    // console.log(command.states);
 
-    if (!command.states.length) {
+    if (!command.statesWithLights.length) {
         return;
     }
 
@@ -63,12 +65,20 @@ exports.sendLightCommand = function (command) {
     // so make the requests sequentially.
     var i = 0;
     (function setLight () {
-        var state = command.states[i];
-        if (state) {
+        var stateAndLight = command.statesWithLights[i];
+        if (stateAndLight) {
             setTimeout(function () {
-                sendLightStateRequest(state, i + 1, setLight);
+                sendLightStateRequest(stateAndLight, setLight);
                 i++;
             }, 50);
         }
     })();
 };
+
+
+exports.getLightState = function() {
+    makeHueAPIRequest('lights', null, function(body) {
+        exports.lights = body;
+    });
+};
+
