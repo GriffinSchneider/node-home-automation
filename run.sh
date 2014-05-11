@@ -1,4 +1,4 @@
-
+#! /bin/bash
 if [ $# -eq 0 ]
 then
     node-supervisor -e 'html|js|css' server.js
