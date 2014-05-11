@@ -87,9 +87,7 @@ app.post('/api/createCommand', function(request, response) {
     command.name = body.name; 
     
     for (var lightNumber in body) {
-        console.log(lightNumber);
         if (body.hasOwnProperty(lightNumber) && !isNaN(lightNumber)) {
-            console.log(lightNumber);
             var stateId = body[lightNumber];
             if (stateId !== 'none') {
                 command.statesWithLights.push(
