@@ -3,9 +3,10 @@
   "version": "0.0.1",
   "main": "server.js",
   "dependencies": {
+    "q": "*",
     "express": "3.4.8",
     "mongoose": "3.8.8",
-    "node-hue-api": "0.2.2",
+    "mongoose-q": "*",
     "consolidate": "*",
     "handlebars": "*",
     "reload": "*"

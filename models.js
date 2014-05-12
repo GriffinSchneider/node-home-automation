@@ -27,6 +27,10 @@ var lightStateSchema = mongoose.Schema ({
 var LightState = mongoose.model('LightState', lightStateSchema);
 exports.LightState = LightState;
 
+LightState.findById = function(objectId) {
+    return LightState.findOneQ({_id:mongoose.Types.ObjectId(''+objectId)});
+};
+
 /////////////////////
 // Command
 /////////////////////
@@ -38,11 +42,8 @@ var lightCommandSchema = mongoose.Schema({
 var LightCommand = mongoose.model('LightCommand', lightCommandSchema);
 exports.LightCommand = LightCommand;
 
-/////////////////////
-// Convenience
-/////////////////////
-exports.objectId = function (objectIdString) {
-    return mongoose.Types.ObjectId(objectIdString);
+LightCommand.findById = function(objectId) {
+    return LightCommand.findOneQ({_id:mongoose.Types.ObjectId(objectId)});
 };
 
 
