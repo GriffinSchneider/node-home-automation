@@ -28,7 +28,7 @@ var LightState = mongoose.model('LightState', lightStateSchema);
 exports.LightState = LightState;
 
 LightState.findById = function(objectId) {
-    return LightState.findOneQ({_id:mongoose.Types.ObjectId(''+objectId)});
+    return LightState.findOneQ({_id:mongoose.Types.ObjectId(objectId ? (''+objectId) : null)});
 };
 
 /////////////////////
@@ -43,7 +43,7 @@ var LightCommand = mongoose.model('LightCommand', lightCommandSchema);
 exports.LightCommand = LightCommand;
 
 LightCommand.findById = function(objectId) {
-    return LightCommand.findOneQ({_id:mongoose.Types.ObjectId(objectId)});
+    return LightCommand.findOneQ({_id:mongoose.Types.ObjectId(objectId ? (''+objectId) : null)});
 };
 
 
