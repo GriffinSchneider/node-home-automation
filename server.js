@@ -20,16 +20,10 @@ app.set('views', __dirname + '/views');
 app.get('/', function(request, response) {
     models.LightCommand.findQ(
         {}
-    ).then(function (found) {
-        var commands = found.map(function(command) {
-            return {
-                _id: command._id,
-                name: command.name
-            };
-        });
+    ).then(function (allCommands) {
         response.render('main', {
             partials: {page: 'chooseCommand'},
-            lightCommands: commands
+            lightCommands: _.map(allCommands, _.partial(_.pick, _, '_id', 'name'))
         });
     }).done();
 });
@@ -38,12 +32,8 @@ app.get('/editState/:stateId?', function(request, response) {
     models.LightState.findById(
         request.param('stateId')
     ).then (function(lightState) {
-        var renderDict = {
-            partials: {page: 'createState'}
-        };
-        for (var prop in lightState) {
-            renderDict[prop] = lightState[prop];
-        }
+        var renderDict = _.clone(lightState) || {};
+        renderDict.partials = {page: 'createState'};
         response.render('main', renderDict);
     }).done();
 });
