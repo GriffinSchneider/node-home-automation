@@ -1,6 +1,8 @@
+{{#unless _id}}
 <script>
  $('#createState').addClass('active');
 </script>
+{{/unless}}
 
 <style>
  form {
@@ -9,13 +11,13 @@
  }
 </style>
 
-<form class="form-horizontal" action="/api/createState" method="post">
+<form class="form-horizontal" action="/api/editState/{{_id}}" method="post">
   <fieldset>
 
     <div class="form-group">
       <label class="col-md-4 control-label" for="name">Name</label>  
       <div class="col-md-4">
-        <input name="name" type="text" placeholder="name" class="form-control input-md" required="">
+        <input value="{{name}}" name="name" type="text" placeholder="name" class="form-control input-md" required="">
       </div>
     </div>
 

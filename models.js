@@ -32,14 +32,18 @@ exports.LightState = LightState;
 /////////////////////
 var lightCommandSchema = mongoose.Schema({
     name: String,
-    statesWithLights: [{
-        lightNumber: Number,
-        lightStateId: mongoose.Schema.Types.ObjectId
-    }]
+    statesForLights: [mongoose.Schema.Types.ObjectId]
 });
 
 var LightCommand = mongoose.model('LightCommand', lightCommandSchema);
 exports.LightCommand = LightCommand;
+
+/////////////////////
+// Convenience
+/////////////////////
+exports.objectId = function (objectIdString) {
+    return mongoose.Types.ObjectId(objectIdString);
+};
 
 
 /////////////////////

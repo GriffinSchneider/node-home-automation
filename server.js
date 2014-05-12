@@ -1,6 +1,7 @@
 var path = require('path');
 var express = require('express');
 var http = require('http');
+var mongoose = require('mongoose');
 
 var models = require('./models.js');
 var api = require('./hue-api.js');
@@ -30,79 +31,118 @@ app.get('/', function(request, response) {
     });
 });
 
-app.get('/createState', function(request, response) {
-    response.render('main', {
-        partials: {page: 'createState'} 
+app.get('/editState/:stateId?', function(request, response) {
+    models.LightState.findOne({_id:models.objectId(request.param('stateId'))}, function(err, lightState) {
+        var renderDict = {
+            partials: {page: 'createState'}
+        };
+        for (var prop in lightState) {
+            renderDict[prop] = lightState[prop];
+        }
+        response.render('main', renderDict);
     });
 });
 
-app.get('/createCommand', function(request, response) {
-    models.LightState.find(function(err, found) {
-        var states = found.map(function(state) {
-            return {
-                _id: state._id,
-                name: state.name
-            };
+app.get('/editCommand/:commandId?', function(request, response) {
+    // Find the command we're trying to edit
+    models.LightCommand.findOne({_id:models.objectId(request.param('commandId'))}, function(err, lightCommand) {
+        models.LightState.find(function(err, found) {
+            var allStates = found.map(function(state) {
+                return {
+                    _id: state._id,
+                    name: state.name
+                };
+            });
+
+
+            var lightAndStateArray = [];
+            var storedStatesWithLights = lightCommand ? lightCommand.statesWithLights : [];
+            
+            // Loop through all the lights
+            for (var lightNumber in api.lights) {
+                
+                var lightAndState = {light: api.lights[lightNumber],
+                                   states:[]};
+
+                // Loop through all the states
+                for (var stateIndex in allStates) {
+                    // For each state, make a copy of it that we can modify
+                    var stateForLight = {
+                        _id: allStates[stateIndex]._id,
+                        name: allStates[stateIndex].name,
+                        selected: false
+                    };
+
+                    var storedStateIdForLight = lightCommand? lightCommand.statesForLights[lightNumber] : null;
+                    
+                    if (storedStateIdForLight && stateForLight._id.equals(storedStateIdForLight)) {
+                        stateForLight.selected = true;
+                    }
+                    
+                    lightAndState.states.push(stateForLight);
+                }
+                
+                lightAndStateArray[lightNumber - 1] = lightAndState;
+            }
+            
+            response.render('main', {
+                partials: {page: 'createCommand'},
+                lightsAndStates: lightAndStateArray,
+                lightCommand: lightCommand
+            });
         });
-        var lightArray = [];
-        for (var lightNumber in api.lights) {
-            if (api.lights.hasOwnProperty(lightNumber)) {
-                lightArray[lightNumber - 1] = api.lights[lightNumber];
+    });
+    
+});
+
+app.post('/api/editState/:stateId?', function(request, response) {
+    models.LightState.findOne({_id:models.objectId(request.param('stateId'))}, function(err, lightState) {
+        
+        if (!lightState) {
+            lightState = new models.LightState();
+        }
+        
+        for (var param in request.body) {
+            if (request.body.hasOwnProperty(param)) {
+                var value = request.body[param];
+                if (param === 'isOn' && value === 'off') {
+                    value = false;
+                }
+                lightState[param] = value;
             }
         }
-        console.log(lightArray);
-        response.render('main', {
-            partials: {page: 'createCommand'},
-            lightStates: states,
-            lights: lightArray
-        });
+        lightState.save();
+        
+        response.redirect("/");
+        
     });
 });
 
-app.post('/api/createState', function(request, response) {
+app.post('/api/editCommand/:commandId?', function(request, response) {
+    models.LightCommand.findOne({_id:models.objectId(request.param('commandId'))}, function(err, command) {
+        
+        var body = request.body;
 
-    var state = new models.LightState();
-    
-    for (var param in request.body) {
-        if (request.body.hasOwnProperty(param)) {
-            var value = request.body[param];
-            if (param === 'isOn' && value === 'off') {
-                value = false;
-            }
-            state[param] = value;
+        if (!command) {
+            command = new models.LightCommand();
+            command.statesForLights = [];
         }
-    }
-    state.save();
-    
-    console.log(state);
-    
-    response.redirect("/");
-});
-
-app.post('/api/createCommand', function(request, response) {
-    var body = request.body;
-
-    var command = new models.LightCommand();
-    command.statesWithLights = [];
-    command.name = body.name; 
-    
-    for (var lightNumber in body) {
-        if (body.hasOwnProperty(lightNumber) && !isNaN(lightNumber)) {
-            var stateId = body[lightNumber];
-            if (stateId !== 'none') {
-                command.statesWithLights.push(
-                    {lightNumber: lightNumber + 1,
-                     lightStateId: body[lightNumber]});
+        
+        command.name = body.name; 
+        
+        for (var lightNumber in body) {
+            if (!isNaN(lightNumber)) {
+                var stateId = body[lightNumber];
+                if (stateId !== 'none') {
+                    command.statesForLights.set(parseInt(lightNumber) + 1, body[lightNumber]);
+                }
             }
         }
-    }
-    
-    command.save();
-    
-    console.log(request.body);
-    console.log(command);
-    
-    response.redirect("/");
+        
+        command.save();
+        
+        response.redirect("/");
+    });
 });
     
 app.get('/api/sendCommand/:commandId', function(request, response){

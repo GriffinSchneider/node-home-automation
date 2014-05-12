@@ -10,29 +10,29 @@
  }
 </style>
 
-<form class="form-horizontal" action="/api/createCommand" method="post">
+<form class="form-horizontal" action="/api/editCommand/{{#if lightCommand._id}}{{lightCommand._id}}{{/if}}" method="post">
 <fieldset>
   
   <div class="form-group">
     <label class="col-md-4 control-label" for="name">Name</label>  
     <div class="col-md-4">
-      <input name="name" type="text" placeholder="name" class="form-control input-md" required="">
+      <input name="name" type="text" placeholder="name" class="form-control input-md" required="" value="{{lightCommand.name}}">
     </div>
   </div>
 
-  {{#lights}}
+  {{#lightsAndStates}}
   <div class="form-group">
-    <label class="col-md-4 control-label" for="{{@index}}">{{name}}</label>
+    <label class="col-md-4 control-label" for="{{@index}}">{{light.name}}</label>
     <div class="col-md-4">
       <select id="selectbasic" name="{{@index}}" class="form-control">
         <option value="none">No Action</option>
-        {{#../lightStates}}
-        <option value="{{_id}}">{{name}}</option>
-        {{/../lightStates}}
+        {{#states}}
+        <option value="{{_id}}" {{#if selected}}selected{{/if}}>{{name}}</option>
+        {{/states}}
       </select>
     </div>
   </div>
-  {{/lights}}
+  {{/lightsAndStates}}
   
   <div class="form-group">
     <label class="col-md-4 control-label" for="button1id"></label>

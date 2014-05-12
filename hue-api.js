@@ -26,7 +26,7 @@ function makeHueAPIRequest(path, data, callbackWithBody) {
     request.end();
 };
 
-function sendLightStateRequest(stateAndLight, callback) {
+function sendLightStateRequest(stateId, lightNumber, callback) {
     var mapping = {
         isOn: "on",
         effect: "effect",
@@ -39,7 +39,7 @@ function sendLightStateRequest(stateAndLight, callback) {
 
     var requestDict = {};
 
-    models.LightState.findOne({_id:stateAndLight.lightStateId}, function(err, lightState) {
+    models.LightState.findOne({_id:stateId}, function(err, lightState) {
         for (var propertyName in lightState) {
             var propertyValue = lightState[propertyName];
             var mappedPropertyName = mapping[propertyName];
@@ -48,7 +48,7 @@ function sendLightStateRequest(stateAndLight, callback) {
             }
         }
 
-        makeHueAPIRequest('lights/' + stateAndLight.lightNumber + '/state', requestDict, function (body) {
+        makeHueAPIRequest('lights/' + lightNumber + '/state', requestDict, function (body) {
             console.log(body);
             callback();
         });
@@ -57,18 +57,28 @@ function sendLightStateRequest(stateAndLight, callback) {
 
 exports.sendLightCommand = function (command) {
 
-    if (!command.statesWithLights.length) {
+    if (!command.statesForLights.length) {
         return;
+    }
+
+    var statesForLights = command.statesForLights;
+
+    var lightsToChange = [];
+    for (var lightNumber in statesForLights) {
+        if (!isNaN(lightNumber) && statesForLights[lightNumber]) {
+            lightsToChange.push({lightNumber: lightNumber,
+                                 stateId: statesForLights[lightNumber]});
+        }
     }
 
     // Making many requests at once seems to overwhelm the bridge,
     // so make the requests sequentially.
     var i = 0;
     (function setLight () {
-        var stateAndLight = command.statesWithLights[i];
+        var stateAndLight = lightsToChange[i];
         if (stateAndLight) {
             setTimeout(function () {
-                sendLightStateRequest(stateAndLight, setLight);
+                sendLightStateRequest(stateAndLight.stateId, stateAndLight.lightNumber, setLight);
                 i++;
             }, 50);
         }
