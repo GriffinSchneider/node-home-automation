@@ -28,6 +28,10 @@ app.get('/', function(request, response) {
     }).done();
 });
 
+
+///////////////////////////////
+// States
+///////////////////////////////
 app.get('/editState/:stateId?', function(request, response) {
     models.LightState.findById(
         request.param('stateId')
@@ -38,6 +42,21 @@ app.get('/editState/:stateId?', function(request, response) {
     }).done();
 });
 
+app.post('/api/editState/:stateId?', function(request, response) {
+    models.LightState.findById(
+        request.param('stateId')
+    ).then(function(lightState) {
+        lightState = lightState || new models.LightState();
+        _.extend(lightState, _.omit(request.body, 'isOn'));
+        lightState.isOn = request.body['isOn'] === 'on';
+        lightState.save();
+        response.redirect("/");
+    }).done();
+});
+
+///////////////////////////////
+// Commands
+///////////////////////////////
 app.get('/editCommand/:commandId?', function(request, response) {
     Q.all([
         models.LightCommand.findById(request.param('commandId')),
@@ -68,18 +87,6 @@ app.get('/editCommand/:commandId?', function(request, response) {
             lightCommand: lightCommand
         });
         
-    }).done();
-});
-
-app.post('/api/editState/:stateId?', function(request, response) {
-    models.LightState.findById(
-        request.param('stateId')
-    ).then(function(lightState) {
-        lightState = lightState || new models.LightState();
-        _.extend(lightState, _.omit(request.body, 'isOn'));
-        lightState.isOn = request.body['isOn'] === 'on';
-        lightState.save();
-        response.redirect("/");
     }).done();
 });
 
@@ -119,6 +126,7 @@ app.get('/api/sendCommand/:commandId', function(request, response){
     }).done();
     response.send();
 });
+
 
 var server = app.listen (3000, function () {
     console.log('Listening on port %d', server.address().port);
