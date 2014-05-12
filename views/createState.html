@@ -24,28 +24,28 @@
     <div class="form-group">
       <label class="col-md-4 control-label" for="brightness">Brightness</label>  
       <div class="col-md-4">
-        <input name="brightness" type="text" placeholder="brightness" class="form-control input-md" pattern="[0-9]*">
+        <input value="{{brightness}}" name="brightness" type="text" placeholder="brightness" class="form-control input-md" pattern="[0-9]*">
       </div>
     </div>
 
     <div class="form-group">
       <label class="col-md-4 control-label" for="saturation">Saturation</label>  
       <div class="col-md-4">
-        <input name="saturation" type="text" placeholder="saturation" class="form-control input-md" pattern="[0-9]*">
+        <input value="{{saturation}}" name="saturation" type="text" placeholder="saturation" class="form-control input-md" pattern="[0-9]*">
       </div>
     </div>
 
     <div class="form-group">
       <label class="col-md-4 control-label" for="hue">Hue</label>  
       <div class="col-md-4">
-        <input name="hue" type="text" placeholder="hue" class="form-control input-md" pattern="[0-9]*">
+        <input value="{{hue}}" name="hue" type="text" placeholder="hue" class="form-control input-md" pattern="[0-9]*">
       </div>
     </div>
 
     <div class="form-group">
       <label class="col-md-4 control-label" for="transitionTime">Transition Time</label>  
       <div class="col-md-4">
-        <input name="transitionTime" type="text" placeholder="transition time" class="form-control input-md" pattern="[0-9]*">
+        <input value="{{transitionTime}}" name="transitionTime" type="text" placeholder="transition time" class="form-control input-md" pattern="[0-9]*">
       </div>
     </div>
 
@@ -53,11 +53,11 @@
       <label class="col-md-4 control-label" for="isOn">On-ness</label>
       <div class="col-md-4"> 
         <label class="radio-inline" for="radios-1">
-          <input type="radio" name="isOn" id="radios-0" value="on" checked="checked">
+          <input type="radio" name="isOn" id="radios-0" value="on" {{#if isOn}}checked{{/if}}>
           on
         </label> 
         <label class="radio-inline" for="radios-1">
-          <input type="radio" name="isOn" id="radios-1" value="off">
+          <input type="radio" name="isOn" id="radios-1" value="off" {{#unless isOn}}checked{{/unless}}>
           off
         </label>
       </div>

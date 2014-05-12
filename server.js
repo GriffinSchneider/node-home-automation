@@ -74,25 +74,12 @@ app.get('/editCommand/:commandId?', function(request, response) {
 app.post('/api/editState/:stateId?', function(request, response) {
     models.LightState.findById(
         request.param('stateId')
-        
     ).then(function(lightState) {
-        if (!lightState) {
-            lightState = new models.LightState();
-        }
-        
-        for (var param in request.body) {
-            if (request.body.hasOwnProperty(param)) {
-                var value = request.body[param];
-                if (param === 'isOn' && value === 'off') {
-                    value = false;
-                }
-                lightState[param] = value;
-            }
-        }
+        lightState = lightState || new models.LightState();
+        _.extend(lightState, _.omit(request.body, 'isOn'));
+        lightState.isOn = request.body['isOn'] === 'on';
         lightState.save();
-        
         response.redirect("/");
-        
     }).done();
 });
 
