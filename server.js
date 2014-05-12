@@ -2,6 +2,7 @@ var path = require('path');
 var express = require('express');
 var mongoose = require('mongoose-q')();
 var Q = require('q');
+var _ = require('underscore');
 
 var models = require('./models.js');
 var api = require('./hue-api.js');
@@ -48,47 +49,28 @@ app.get('/editState/:stateId?', function(request, response) {
 });
 
 app.get('/editCommand/:commandId?', function(request, response) {
-    // Find the command we're trying to edit
     Q.all([
         models.LightCommand.findById(request.param('commandId')),
         models.LightState.findQ()
-    ]).spread(function(lightCommand, found) {
-        var allStates = found.map(function(state) {
+    ]).spread(function(lightCommand, allStates) {
+
+        var lightAndStateArray = _.map(api.lights, function (light, lightNumber) {
+            var states = _.map(allStates, function(state, stateIndex) {
+                var storedStateIdForLight = lightCommand ? lightCommand.statesForLights[lightNumber] : null;
+                var isSelected = storedStateIdForLight && state._id.equals(storedStateIdForLight);
+                return {
+                    _id: state._id,
+                    name: state.name,
+                    selected: isSelected
+                };
+            });
             return {
-                _id: state._id,
-                name: state.name
+                light: light,
+                states: states
             };
         });
 
-        var lightAndStateArray = [];
-        var storedStatesWithLights = lightCommand ? lightCommand.statesWithLights : [];
-        
-        // Loop through all the lights
-        for (var lightNumber in api.lights) {
-            
-            var lightAndState = {light: api.lights[lightNumber],
-                               states:[]};
-
-            // Loop through all the states
-            for (var stateIndex in allStates) {
-                // For each state, make a copy of it that we can modify
-                var stateForLight = {
-                    _id: allStates[stateIndex]._id,
-                    name: allStates[stateIndex].name,
-                    selected: false
-                };
-
-                var storedStateIdForLight = lightCommand? lightCommand.statesForLights[lightNumber] : null;
-                
-                if (storedStateIdForLight && stateForLight._id.equals(storedStateIdForLight)) {
-                    stateForLight.selected = true;
-                }
-                
-                lightAndState.states.push(stateForLight);
-            }
-            
-            lightAndStateArray[lightNumber - 1] = lightAndState;
-        }
+        console.log(lightAndStateArray);
         
         response.render('main', {
             partials: {page: 'createCommand'},

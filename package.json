@@ -4,6 +4,7 @@
   "main": "server.js",
   "dependencies": {
     "q": "*",
+    "underscore": "*",
     "express": "3.4.8",
     "mongoose": "3.8.8",
     "mongoose-q": "*",
