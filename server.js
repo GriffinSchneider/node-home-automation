@@ -50,6 +50,7 @@ app.post('/api/editState/:stateId?', function(request, response) {
         _.extend(lightState, _.omit(request.body, 'isOn'));
         lightState.isOn = request.body['isOn'] === 'on';
         lightState.save();
+        console.log("\nSaved State:\n", lightState);
         response.redirect("/");
     }).done();
 });
@@ -79,8 +80,6 @@ app.get('/editCommand/:commandId?', function(request, response) {
             };
         });
 
-        console.log(lightAndStateArray);
-        
         response.render('main', {
             partials: {page: 'createCommand'},
             lightsAndStates: lightAndStateArray,
@@ -96,24 +95,18 @@ app.post('/api/editCommand/:commandId?', function(request, response) {
         
     ).then(function(command) {
         var body = request.body;
-
-        if (!command) {
-            command = new models.LightCommand();
-            command.statesForLights = [];
-        }
-        
+        command = command || new models.LightCommand();
         command.name = body.name; 
-        
-        for (var lightNumber in body) {
-            if (!isNaN(lightNumber)) {
-                var stateId = body[lightNumber];
-                if (stateId !== 'none') {
-                    command.statesForLights.set(parseInt(lightNumber) + 1, body[lightNumber]);
-                }
+
+        _.each(body, function(stateId, lightId) {
+            var lightNumber = parseInt(lightId);
+            if (lightNumber && stateId !== 'none') {
+                command.statesForLights.set(lightNumber + 1, stateId);
             }
-        }
+        });
         
         command.save();
+        console.log("\nSaved Command:\n", command);
         
         response.redirect("/");
         
