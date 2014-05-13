@@ -37,7 +37,7 @@ app.get('/editState/:stateId?', function(request, response) {
         request.param('stateId')
     ).then (function(lightState) {
         var renderDict = _.clone(lightState) || {};
-        renderDict.partials = {page: 'createState'};
+        renderDict.partials = {page: 'editState'};
         response.render('main', renderDict);
     }).done();
 });
@@ -81,7 +81,7 @@ app.get('/editCommand/:commandId?', function(request, response) {
         });
 
         response.render('main', {
-            partials: {page: 'createCommand'},
+            partials: {page: 'editCommand'},
             lightsAndStates: lightAndStateArray,
             lightCommand: lightCommand
         });
