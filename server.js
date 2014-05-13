@@ -17,21 +17,26 @@ app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
 
-app.get('/', function(request, response) {
-    models.LightCommand.findQ(
+function buttonGrid(model, editUrl, shouldFollowLinks, request, response) {
+    model.findQ(
         {}
-    ).then(function (allCommands) {
+    ).then (function(allStuff) {
         response.render('main', {
-            partials: {page: 'chooseCommand'},
-            lightCommands: _.map(allCommands, _.partial(_.pick, _, '_id', 'name'))
+            partials: {page: 'buttonGrid'},
+            buttons: _.map(allStuff, _.partial(_.pick, _, '_id', 'name')),
+            buttonUrl: editUrl,
+            shouldFollowLinks: shouldFollowLinks
         });
     }).done();
-});
+}
 
+app.get('/', _.partial(buttonGrid, models.LightCommand, false, '/api/sendCommand'));
 
 ///////////////////////////////
 // States
 ///////////////////////////////
+app.get('/editStates', _.partial(buttonGrid, models.LightState, true, '/editState/'));
+
 app.get('/editState/:stateId?', function(request, response) {
     models.LightState.findById(
         request.param('stateId')
@@ -58,6 +63,8 @@ app.post('/api/editState/:stateId?', function(request, response) {
 ///////////////////////////////
 // Commands
 ///////////////////////////////
+app.get('/editCommands', _.partial(buttonGrid, models.LightCommand, true, '/editCommand/'));
+
 app.get('/editCommand/:commandId?', function(request, response) {
     Q.all([
         models.LightCommand.findById(request.param('commandId')),
