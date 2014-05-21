@@ -1,0 +1,16 @@
+<div class="button-container">
+  {{#buttons}}
+  <a href="{{../buttonUrl}}{{_id}}" class="lightButton button btn btn-lg btn-primary">
+    <span>{{name}}</span>
+  </a>
+  {{/buttons}}
+</div>
+
+{{#unless shouldFollowLinks}}
+<script>
+ $('.lightButton').click(function() {
+   $.get($(this).attr('href'));
+   return false;
+ });
+</script>
+{{/unless}}

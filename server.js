@@ -17,25 +17,29 @@ app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
 
-function buttonGrid(model, editUrl, shouldFollowLinks, request, response) {
+function buttonGrid(model, buttonUrl, shouldFollowLinks, request, response) {
     model.findQ(
         {}
     ).then (function(allStuff) {
         response.render('main', {
             partials: {page: 'buttonGrid'},
             buttons: _.map(allStuff, _.partial(_.pick, _, '_id', 'name')),
-            buttonUrl: editUrl,
+            buttonUrl: buttonUrl,
             shouldFollowLinks: shouldFollowLinks
         });
     }).done();
 }
 
-app.get('/', _.partial(buttonGrid, models.LightCommand, false, '/api/sendCommand'));
+app.get('/', function (request, response) {
+    buttonGrid(models.LightCommand, '/api/sendCommand/', false, request, response);
+});
 
 ///////////////////////////////
 // States
 ///////////////////////////////
-app.get('/editStates', _.partial(buttonGrid, models.LightState, true, '/editState/'));
+app.get('/editStates', function(request, response) {
+    buttonGrid(models.LightState, '/editState/', true, request, response);
+});
 
 app.get('/editState/:stateId?', function(request, response) {
     models.LightState.findById(
@@ -45,6 +49,11 @@ app.get('/editState/:stateId?', function(request, response) {
         renderDict.partials = {page: 'editState'};
         response.render('main', renderDict);
     }).done();
+});
+
+app.get('/deleteState/:stateId', function(request, response) {
+    models.LightState.removeById(request.param('stateId'));
+    response.redirect('/');
 });
 
 app.post('/api/editState/:stateId?', function(request, response) {
@@ -63,7 +72,9 @@ app.post('/api/editState/:stateId?', function(request, response) {
 ///////////////////////////////
 // Commands
 ///////////////////////////////
-app.get('/editCommands', _.partial(buttonGrid, models.LightCommand, true, '/editCommand/'));
+app.get('/editCommands', function(request, response) {
+    buttonGrid(models.LightCommand, '/editCommand/', true, request, response);
+});
 
 app.get('/editCommand/:commandId?', function(request, response) {
     Q.all([
@@ -96,6 +107,11 @@ app.get('/editCommand/:commandId?', function(request, response) {
     }).done();
 });
 
+app.get('/deleteCommand/:commandId', function(request, response) {
+    models.LightCommand.removeById(request.param('commandId'));
+    response.redirect('/');
+});
+
 app.post('/api/editCommand/:commandId?', function(request, response) {
     models.LightCommand.findById(
         request.param('commandId')
@@ -121,7 +137,10 @@ app.post('/api/editCommand/:commandId?', function(request, response) {
 });
     
 app.get('/api/sendCommand/:commandId', function(request, response){
-    models.LightCommand.findById(request.param('commandId')).then(function(command) {
+    models.LightCommand.findById(
+        request.param('commandId')
+    ).then(function(command) {
+        console.log('\nSending command:\n', command);
         api.sendLightCommand(command);
     }).done();
     response.send();

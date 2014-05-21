@@ -39,11 +39,21 @@ function sendLightStateRequest(stateId, lightNumber, callback) {
 
     var requestDict = {};
 
-    models.LightState.findOne({_id:stateId}, function(err, lightState) {
+    models.LightState.findById(
+        stateId
+    ).then(function(lightState) {
         for (var propertyName in lightState) {
             var propertyValue = lightState[propertyName];
             var mappedPropertyName = mapping[propertyName];
-            if (mapping.hasOwnProperty(propertyName) && propertyValue && mappedPropertyName && propertyValue.length !== 0) {
+
+            if (propertyName === 'isOn') {
+                requestDict[mappedPropertyName] = propertyValue;
+                continue;
+            } else if (propertyName === 'xy') {
+                if (propertyValue.length) {
+                    requestDict[mappedPropertyName] = propertyValue;
+                }
+            } else if (mappedPropertyName && propertyValue) {
                 requestDict[mappedPropertyName] = propertyValue;
             }
         }
@@ -52,7 +62,7 @@ function sendLightStateRequest(stateId, lightNumber, callback) {
             console.log(body);
             callback();
         });
-    });
+    }).done();
 };
 
 exports.sendLightCommand = function (command) {

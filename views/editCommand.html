@@ -38,8 +38,10 @@
     <label class="col-md-4 control-label" for="button1id"></label>
     <div class="col-md-8">
       <button id="saveButton" type="submit" class="btn btn-success">Save</button>
-      <button id="cancelButton" class="btn btn-primary">Cancel</button>
-      <button id="deleteButton" class="btn btn-danger">Delete</button>
+      <a id="cancelButton" class="btn btn-primary" href="/">Cancel</a>
+      {{#if lightCommand._id}}
+      <a id="deleteButton" class="btn btn-danger" href="/deleteCommand/{{lightCommand._id}}">Delete</a>
+      {{/if}}
     </div>
   </div>
 

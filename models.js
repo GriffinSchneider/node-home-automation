@@ -30,6 +30,9 @@ exports.LightState = LightState;
 LightState.findById = function(objectId) {
     return LightState.findOneQ({_id:mongoose.Types.ObjectId(objectId ? (''+objectId) : null)});
 };
+LightState.removeById = function(objectId) {
+    return LightState.removeQ({_id:mongoose.Types.ObjectId(objectId ? (''+objectId) : null)});
+};
 
 /////////////////////
 // Command
@@ -45,31 +48,34 @@ exports.LightCommand = LightCommand;
 LightCommand.findById = function(objectId) {
     return LightCommand.findOneQ({_id:mongoose.Types.ObjectId(objectId ? (''+objectId) : null)});
 };
+LightCommand.removeById = function(objectId) {
+    return LightCommand.removeQ({_id:mongoose.Types.ObjectId(objectId ? (''+objectId) : null)});
+};
 
 
 /////////////////////
 // Test Data
 /////////////////////
-var testing = true;
-if (testing) {
-    LightCommand.collection.drop();
-    LightState.collection.drop();
-    for (i = 0; i < 100; i++) {
-        var state = new LightState();
-        state.name = "Blue";
-        state.isOn = true;
-        state.effect = 'none';
-        state.brightness = 255;
-        state.saturation = 255;
-        state.hue = 600 * i;
-        state.transitionTime = 5;
-        state.save();
+// var testing = true;
+// if (testing) {
+    // LightCommand.collection.drop();
+    // LightState.collection.drop();
+//     for (i = 0; i < 100; i++) {
+//         var state = new LightState();
+//         state.name = "Blue";
+//         state.isOn = true;
+//         state.effect = 'none';
+//         state.brightness = 255;
+//         state.saturation = 255;
+//         state.hue = 600 * i;
+//         state.transitionTime = 5;
+//         state.save();
         
-        var testCommand = new LightCommand();
-        testCommand.name = "Test Light Command";
+//         var testCommand = new LightCommand();
+//         testCommand.name = "Test Light Command";
         
         
-        testCommand.states = Array.apply(null, Array(10)).map(function(){return state;});
-        testCommand.save();
-    }
-}
+//         testCommand.states = Array.apply(null, Array(10)).map(function(){return state;});
+//         testCommand.save();
+//     }
+// }
