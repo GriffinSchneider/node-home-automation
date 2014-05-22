@@ -123,7 +123,7 @@ app.post('/api/editCommand/:commandId?', function(request, response) {
 
         _.each(body, function(stateId, lightId) {
             var lightNumber = parseInt(lightId);
-            if (lightNumber && stateId !== 'none') {
+            if (!isNaN(lightNumber) && stateId !== 'none') {
                 command.statesForLights.set(lightNumber + 1, stateId);
             }
         });
