@@ -1,16 +1,3 @@
-{{#unless _id}}
-<script>
- $('#createState').addClass('active');
-</script>
-{{/unless}}
-
-<style>
- form {
-   padding-left: 40px;
-   padding-right: 40px;
- }
-</style>
-
 <form class="form-horizontal" action="/api/editState/{{_id}}" method="post">
   <fieldset>
 
@@ -77,3 +64,17 @@
   </fieldset>
 </form>
 
+
+<style>
+ form {
+   padding-left: 40px;
+   padding-right: 40px;
+ }
+</style>
+
+
+{{#unless _id}}
+<script>
+ $('#createState').addClass('active');
+</script>
+{{/unless}}

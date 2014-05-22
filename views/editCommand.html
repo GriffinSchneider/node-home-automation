@@ -1,15 +1,3 @@
-
-<script>
- $('#createCommand').addClass('active');
-</script>
-
-<style>
- form {
-   padding-left: 40px;
-   padding-right: 40px;
- }
-</style>
-
 <form class="form-horizontal" action="/api/editCommand/{{#if lightCommand._id}}{{lightCommand._id}}{{/if}}" method="post">
 <fieldset>
   
@@ -48,6 +36,15 @@
 </fieldset>
 </form>
 
-<script>
-</script>
 
+<style>
+ form {
+   padding-left: 40px;
+   padding-right: 40px;
+ }
+</style>
+
+
+<script>
+ $('#createCommand').addClass('active');
+</script>
