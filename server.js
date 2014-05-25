@@ -16,14 +16,24 @@ app.engine('html', consolidate.handlebars);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
-
 function buttonGrid(model, buttonUrl, shouldFollowLinks, request, response) {
-    model.findQ(
-        {}
-    ).then (function(allStuff) {
+    model.aggregateQ([
+        {$group : {
+            _id : "$groupName",
+            buttons: {
+                $push: {_id: "$_id", name: "$name", indexInGroup: "$indexInGroup"}
+            }
+        }}
+    ]).then (function(allStuff) {
+        var sortedStuff = _.map(_.sortBy(allStuff, '_id'), function(group, groupIndex) {
+            return {
+                _id: group._id,
+                buttons: _.sortBy(group.buttons, 'indexInGroup')
+            };
+        });
         response.render('main', {
             partials: {page: 'buttonGrid'},
-            buttons: _.map(allStuff, _.partial(_.pick, _, '_id', 'name')),
+            sections: sortedStuff,
             buttonUrl: buttonUrl,
             shouldFollowLinks: shouldFollowLinks
         });
@@ -135,7 +145,21 @@ app.post('/api/editCommand/:commandId?', function(request, response) {
         
     }).done();
 });
-    
+
+app.post('/api/setCommandOrder/:groupId', function(request, response) {
+    _.map(request.body.order, function(commandId, commandIndex) {
+        models.LightCommand.findById(commandId).then(function (command) {
+            if (command) {
+                command.groupName = request.param('groupId');
+                command.indexInGroup = commandIndex;
+                command.save();
+                console.log("\nSaved Command:\n", command);
+            }
+        }).done();
+        response.send();
+    });
+});
+
 app.get('/api/sendCommand/:commandId', function(request, response){
     models.LightCommand.findById(
         request.param('commandId')

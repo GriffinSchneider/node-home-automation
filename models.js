@@ -39,6 +39,8 @@ LightState.removeById = function(objectId) {
 /////////////////////
 var lightCommandSchema = mongoose.Schema({
     name: String,
+    groupName: String,
+    indexInGroup: Number,
     statesForLights: [mongoose.Schema.Types.ObjectId]
 });
 

@@ -1,10 +1,36 @@
 <div class="button-container">
-  {{#buttons}}
-  <a href="{{../buttonUrl}}{{_id}}" class="lightButton button btn btn-lg btn-primary">
-    <span>{{name}}</span>
-  </a>
-  {{/buttons}}
+
+  {{#sections}}
+  <div class="panel panel-default section-{{@index}}">
+    
+    <div class="panel-heading">
+      <h3 class="panel-title">{{_id}}</h3>
+    </div>
+    
+    <div class="panel-body">
+      <ul class="sortable" id="{{_id}}">
+        
+        {{#buttons}}
+        <li id="{{_id}}">
+          <div class="dragHandle">HANDLE</div>
+          <a href="{{../../buttonUrl}}{{_id}}" class="lightButton button btn btn-lg btn-primary">
+            <span>{{name}}</span>
+          </a>
+        </li>
+        {{else}}
+        <li></li>
+        {{/buttons}}
+        
+      </ul>
+    </div>
+  </div>
+  {{/sections}}
+  
 </div>
+
+<button id="newSectionButton" class="button btn btn-lg btn-secondary">
+  Add Section
+</button>
 
 
 <style>
@@ -15,14 +41,57 @@
  .lightButton {
    margin: 0.2em;
  }
+
+.panel {
+   margin: 1em;
+ }
+ 
+ .sortable {
+   list-style-type: none;
+ }
+
+ li {
+   display: inline-block;
+ }
 </style>
 
 
-{{#unless shouldFollowLinks}}
 <script>
+ 
+ $(function() {
+   function setupSortable() {
+     $(".sortable").sortable({
+       connectWith: '.sortable',
+       handle: '.dragHandle'
+     });
+     $(".sortable").disableSelection();
+     $(".sortable").each(function(index) {
+       var cap = $(this);
+       cap.on("sortupdate", function(event, ui) {
+         var sorted = cap.sortable("toArray");
+         $.post("/api/setCommandOrder/"+cap.attr('id'),
+                {order: sorted});
+       });
+     });
+   }
+   setupSortable();
+
+   $('#newSectionButton').click(function(event) {
+     var newSectionName = prompt("Name of new section");
+     var newSection = $('.section-0').clone();
+     newSection.find('.sortable').html("<li></li>");
+     newSection.find('.sortable').attr('id', newSectionName);
+     newSection.find('.panel-title').html(newSectionName);
+     $('.button-container').append(newSection);
+     setupSortable();
+   });
+ });
+
+{{#unless shouldFollowLinks}}
  $('.lightButton').click(function() {
    $.get($(this).attr('href'));
    return false;
  });
-</script>
 {{/unless}}
+ 
+</script>
