@@ -7,12 +7,24 @@
       <input name="name" type="text" placeholder="name" class="form-control input-md" required="" value="{{lightCommand.name}}">
     </div>
   </div>
+  
+  <div class="form-group">
+    <label class="col-md-4 control-label">All</label>
+    <div class="col-md-4">
+      <select id="selectAll" class="form-control" onchange="setAllStates();">
+        <option value="none">No Action</option>
+        {{#states}}
+        <option value="{{_id}}" {{#if selected}}selected{{/if}}>{{name}}</option>
+        {{/states}}
+      </select>
+    </div>
+  </div>
 
   {{#lightsAndStates}}
   <div class="form-group">
     <label class="col-md-4 control-label" for="{{@index}}">{{light.name}}</label>
     <div class="col-md-4">
-      <select id="selectbasic" name="{{@index}}" class="form-control">
+      <select name="{{@index}}" class="form-control lightSelect">
         <option value="none">No Action</option>
         {{#states}}
         <option value="{{_id}}" {{#if selected}}selected{{/if}}>{{name}}</option>
@@ -46,5 +58,8 @@
 
 
 <script>
+ function setAllStates () {
+   $('.lightSelect').val($('#selectAll').val());
+ }
  $('#createCommand').addClass('active');
 </script>

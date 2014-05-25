@@ -110,6 +110,7 @@ app.get('/editCommand/:commandId?', function(request, response) {
 
         response.render('main', {
             partials: {page: 'editCommand'},
+            states: allStates,
             lightsAndStates: lightAndStateArray,
             lightCommand: lightCommand
         });
