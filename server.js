@@ -118,8 +118,11 @@ app.get('/editCommand/:commandId?', function(request, response) {
 });
 
 app.get('/deleteCommand/:commandId', function(request, response) {
-    models.LightCommand.removeById(request.param('commandId'));
-    response.redirect('/');
+    models.LightCommand.findById(request.param('commandId')).then (function(command) {
+        console.log("Deleting commnad:\n", command);
+        models.LightCommand.removeById(request.param('commandId'));
+        response.redirect('/');
+    });
 });
 
 app.post('/api/editCommand/:commandId?', function(request, response) {
