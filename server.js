@@ -11,6 +11,9 @@ var app = express();
 app.use(express.bodyParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Impenetrable security
+app.use(express.basicAuth('', 'itscool'));
+
 var consolidate = require('consolidate');
 app.engine('html', consolidate.handlebars);
 app.set('view engine', 'html');
