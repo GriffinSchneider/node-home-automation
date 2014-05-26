@@ -64,7 +64,7 @@ app.get('/editState/:stateId?', function(request, response) {
     }).done();
 });
 
-app.get('/deleteState/:stateId', function(request, response) {
+app.get('/api/deleteState/:stateId', function(request, response) {
     models.LightState.removeById(request.param('stateId'));
     response.redirect('/');
 });
@@ -121,7 +121,7 @@ app.get('/editCommand/:commandId?', function(request, response) {
     }).done();
 });
 
-app.get('/deleteCommand/:commandId', function(request, response) {
+app.get('/api/deleteCommand/:commandId', function(request, response) {
     models.LightCommand.findById(request.param('commandId')).then (function(command) {
         console.log("Deleting commnad:\n", command);
         models.LightCommand.removeById(request.param('commandId'));
