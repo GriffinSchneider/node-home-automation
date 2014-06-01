@@ -20,23 +20,27 @@ app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
 function buttonGrid(model, buttonUrl, shouldFollowLinks, request, response) {
-    model.aggregateQ([
-        {$group : {
+    model.aggregateQ([{
+        $sort: {
+            indexInGroup: 1
+        }
+    },{
+        $group : {
             _id : "$groupName",
             buttons: {
-                $push: {_id: "$_id", name: "$name", indexInGroup: "$indexInGroup"}
+                $push: {
+                    _id: "$_id", name: "$name"
+                }
             }
-        }}
-    ]).then (function(allStuff) {
-        var sortedStuff = _.map(_.sortBy(allStuff, '_id'), function(group, groupIndex) {
-            return {
-                _id: group._id,
-                buttons: _.sortBy(group.buttons, 'indexInGroup')
-            };
-        });
+        }
+    },{
+        $sort: {
+            _id: 1
+        }
+    }]).then (function(sections) {
         response.render('main', {
             partials: {page: 'buttonGrid'},
-            sections: sortedStuff,
+            sections: sections,
             buttonUrl: buttonUrl,
             shouldFollowLinks: shouldFollowLinks
         });
